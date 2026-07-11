@@ -145,6 +145,70 @@
             display: flex;
             gap: 15px;
         }
+
+        /* --- เอฟเฟกต์เพิ่มเติมสำหรับหน้าจอเริ่มเกม --- */
+        .overlay-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 15, 0.7); /* ปรับให้ใสขึ้นนิดหน่อย */
+            backdrop-filter: blur(8px); /* เพิ่มเบลอพื้นหลังให้ดูเป็นกระจก */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        /* แอนิเมชันแสงวิ่งผ่านปุ่ม */
+        @keyframes sweep {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+        .btn-sweep::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: skewX(-25deg);
+            animation: sweep 3s infinite;
+        }
+
+        /* แอนิเมชันหัวข้อเกมขยับขึ้นลงเบาๆ */
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: floatTitle 4s ease-in-out infinite;
+        }
+
+        /* เส้นสแกนหน้าจอแนว Sci-fi */
+        @keyframes scanline {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+        .hud-scanline {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            animation: scanline 4s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
@@ -176,22 +240,61 @@
 
         <!-- หน้าจอเริ่มเกม -->
         <div id="startScreen" class="overlay-screen">
-            <h1 class="text-5xl font-bold text-cyan-400 mb-4 text-center" style="text-shadow: 0 0 15px #00ffff;">MATH SHOOTER</h1>
-            <h2 class="text-2xl text-white mb-8 text-center">คณิตศาสตร์ ม.1 (จำนวนเต็ม & สมการ)</h2>
+            <div class="hud-scanline"></div>
             
-            <div class="bg-gray-800 bg-opacity-70 p-6 rounded-lg border border-cyan-500 max-w-md text-gray-200 mb-8">
-                <h3 class="text-xl text-yellow-400 mb-2 border-b border-gray-600 pb-2">วิธีเล่น</h3>
-                <ul class="list-disc pl-5 space-y-2">
-                    <li>แก้โจทย์คณิตศาสตร์ที่แสดงอยู่ด้านบน</li>
-                    <li>ใช้ <span class="text-cyan-300">ลูกศร ซ้าย/ขวา</span> (หรือปุ่มบนจอ) เพื่อเคลื่อนที่ยาน</li>
-                    <li>กด <span class="text-pink-400">Spacebar</span> (หรือปุ่มจรวด) เพื่อยิงเลเซอร์</li>
-                    <li>ยิงเป้าหมายที่มี <b>คำตอบที่ถูกต้อง</b></li>
-                    <li>ถ้ายิงผิด หรือปล่อยให้คำตอบที่ถูกตกถึงพื้น จะเสียพลังชีวิต!</li>
+            <!-- ชื่อเกมสุดเท่ -->
+            <div class="animate-float text-center mb-8 relative">
+                <div class="absolute inset-0 bg-cyan-500 blur-[60px] opacity-20 rounded-full"></div>
+                <h1 class="text-6xl md:text-7xl lg:text-8xl font-black italic tracking-wider uppercase leading-none drop-shadow-[0_0_15px_rgba(0,255,255,0.8)] text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-300 to-cyan-600">
+                    MATH
+                </h1>
+                <h1 class="text-6xl md:text-7xl lg:text-8xl font-black italic tracking-wider uppercase leading-none drop-shadow-[0_0_15px_rgba(255,0,255,0.8)] text-transparent bg-clip-text bg-gradient-to-b from-white via-pink-400 to-rose-600 mt-[-5px]">
+                    SHOOTER
+                </h1>
+                <div class="mt-4 inline-block px-6 py-1 border border-cyan-400 rounded-full bg-cyan-900/40 text-cyan-200 font-bold tracking-widest text-sm md:text-base shadow-[0_0_10px_#00ffff_inset]">
+                    MISSION: ม.1 (จำนวนเต็ม & สมการ)
+                </div>
+            </div>
+            
+            <!-- กล่องคำแนะนำแบบ Glassmorphism -->
+            <div class="relative bg-black/40 backdrop-blur-md p-6 rounded-2xl border border-cyan-500/50 shadow-[0_0_30px_rgba(0,255,255,0.15)] max-w-sm md:max-w-lg w-11/12 mb-10 overflow-hidden">
+                <!-- มุมตกแต่งแบบ UI ไซไฟ -->
+                <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400"></div>
+                <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-400"></div>
+                
+                <h3 class="text-xl md:text-2xl text-center mb-5 font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <span class="text-cyan-400">⚡</span> 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">Mission Briefing</span> 
+                    <span class="text-cyan-400">⚡</span>
+                </h3>
+                
+                <ul class="space-y-4 text-gray-200 text-sm md:text-base">
+                    <li class="flex items-start gap-3">
+                        <span class="text-cyan-400 text-lg">🎯</span>
+                        <span>คำนวณโจทย์คณิตศาสตร์ที่แสดงบนหน้าจอ <b>ให้ไวและแม่นยำ</b></span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-cyan-400 text-lg">🕹️</span>
+                        <span>ใช้ <b class="text-cyan-300">ลูกศร ◄ / ►</b> หรือปุ่มบนจอ เพื่อบังคับยาน</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-pink-400 text-lg">🚀</span>
+                        <span>กด <b class="text-pink-400">Spacebar</b> หรือปุ่มจรวด เพื่อยิงเลเซอร์</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-red-400 text-lg">⚠️</span>
+                        <span>ถ้ายิง <b class="text-red-400">ผิด</b> หรือปล่อยให้คำตอบถูกตกถึงพื้น จะเสีย 1 ❤️</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-green-400 text-lg">✨</span>
+                        <span>ตอบถูกต่อเนื่อง <b class="text-green-400">5 ข้อ</b> รับพลังชีวิตเพิ่มทันที!</span>
+                    </li>
                 </ul>
             </div>
             
-            <button id="startBtn" class="px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white text-2xl font-bold rounded-full shadow-[0_0_15px_#00ffff] transition-all transform hover:scale-105">
-                เริ่มเกมเลย!
+            <!-- ปุ่มกดสุดเท่ -->
+            <button id="startBtn" class="btn-sweep relative overflow-hidden px-10 py-4 md:px-12 md:py-4 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 text-white text-2xl md:text-3xl font-black rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.6)] transition-all duration-300 transform hover:scale-110 hover:shadow-[0_0_40px_rgba(0,255,255,0.8)] active:scale-95 border border-cyan-300">
+                <span class="relative z-10 tracking-widest drop-shadow-md">START GAME</span>
             </button>
         </div>
 
